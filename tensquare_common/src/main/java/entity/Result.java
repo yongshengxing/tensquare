@@ -16,13 +16,13 @@ public class Result {
     public Result() {
     }
 
-    public Result(Integer code, boolean flag, String message) {
+    public Result( boolean flag, Integer code,String message) {
         this.code = code;
         this.flag = flag;
         this.message = message;
     }
 
-    public Result(Integer code, boolean flag, String message, Object data) {
+    public Result( boolean flag, Integer code,String message, Object data) {
 
         this.code = code;
         this.flag = flag;
