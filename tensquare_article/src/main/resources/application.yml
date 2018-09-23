@@ -14,3 +14,7 @@ spring:
   redis:
     host: 192.168.66.133
     port: 6379
+  data:
+    mongodb:
+      database: recruitdb
+      host: 192.168.66.133

@@ -15,9 +15,6 @@ public class Problem implements Serializable{
 
 	@Id
 	private String id;//ID
-
-
-	
 	private String title;//标题
 	private String content;//内容
 	private java.util.Date createtime;//创建日期

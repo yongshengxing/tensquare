@@ -106,11 +106,7 @@ public class LabelService {
         };
 
         Pageable pageable = PageRequest.of(curPage - 1 ,pageSize);
-
-
         return labelDao.findAll(specification, pageable);
-
-
     }
 
 }

@@ -21,8 +21,6 @@ public interface ProblemDao extends JpaRepository<Problem,String>,JpaSpecificati
     @Query(value = "SELECT * FROM tb_problem WHERE id in (SELECT problemid FROM tb_pl WHERE labelid = ?1 ) ORDER BY replytime DESC",nativeQuery = true)
     public Page<Problem> findNewList(String labelid,Pageable pageable);
 
-
-
     /**
      * 热门问答列表 hotlist/{label}/{page}/{size}
      * @param labelid
