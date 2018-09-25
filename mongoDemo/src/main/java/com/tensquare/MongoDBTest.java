@@ -22,7 +22,7 @@ public class MongoDBTest {
 
     public static void main(String[] args) {
 
-        MongoClient client = new MongoClient("192.168.66.133");
+        MongoClient client = new MongoClient("192.168.66.134");
         MongoDatabase spitdb = client.getDatabase("spitdb");
         MongoCollection<Document> collection = spitdb.getCollection("spit");
         //查询所有
@@ -39,7 +39,7 @@ public class MongoDBTest {
     @Test
     public void test1() {
 
-        MongoClient client = new MongoClient("192.168.66.133");
+        MongoClient client = new MongoClient("192.168.66.134");
         MongoDatabase spitdb = client.getDatabase("spitdb");
         MongoCollection<Document> spit = spitdb.getCollection("spit");
         Bson bson = new BasicDBObject("userid", "1013");
@@ -57,7 +57,7 @@ public class MongoDBTest {
 
     @Test
     public void test2() {
-        MongoClient client = new MongoClient("192.168.66.133");
+        MongoClient client = new MongoClient("192.168.66.134");
         MongoDatabase spitdb = client.getDatabase("spitdb");
         MongoCollection<Document> spit = spitdb.getCollection("spit");
         BasicDBObject bson = new BasicDBObject("visits", new BasicDBObject("$gt", 10));
@@ -76,7 +76,7 @@ public class MongoDBTest {
     //查询吐槽集合中userid字段不包含1013和1014的文档
     @Test
     public void test3() {
-        MongoClient client = new MongoClient("192.168.66.133");
+        MongoClient client = new MongoClient("192.168.66.134");
         MongoDatabase spitdb = client.getDatabase("spitdb");
         MongoCollection<Document> spit = spitdb.getCollection("spit");
         String[] strings = new String[]{"1013", "1014"};
@@ -97,7 +97,7 @@ public class MongoDBTest {
     //插入数据
     @Test
     public void testInset() {
-        MongoClient client = new MongoClient("192.168.66.133");
+        MongoClient client = new MongoClient("192.168.66.134");
         MongoDatabase spitdb = client.getDatabase("spitdb");
         MongoCollection<Document> spit = spitdb.getCollection("spit");
         Map map = new HashMap();

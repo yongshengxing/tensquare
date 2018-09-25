@@ -10,6 +10,6 @@ spring:
     generate-ddl: true
   datasource:
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://192.168.66.133:3306/tensquare_base?characterEncoding=utf-8
+    url: jdbc:mysql://192.168.66.134:3306/tensquare_base?characterEncoding=utf-8
     username: root
     password: root

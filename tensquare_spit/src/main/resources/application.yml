@@ -5,8 +5,8 @@ spring:
     name: tensquare_spit
   data:
     mongodb:
-      host: 192.168.66.133
+      host: 192.168.66.134
       database: spitdb
   redis:
-    host: 192.168.66.133
+    host: 192.168.66.134
     port: 6379
