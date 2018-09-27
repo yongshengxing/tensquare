@@ -8,7 +8,9 @@ import entity.StatusCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
+import utils.JwtUtil;
 
+import java.util.HashMap;
 import java.util.Map;
 /**
  * 控制器层
@@ -22,8 +24,11 @@ public class AdminController {
 
 	@Autowired
 	private AdminService adminService;
-	
-	
+
+	@Autowired
+	private JwtUtil jwtUtil;
+
+
 	/**
 	 * 查询全部数据
 	 * @return
@@ -32,7 +37,7 @@ public class AdminController {
 	public Result findAll(){
 		return new Result(true,StatusCode.OK,"查询成功",adminService.findAll());
 	}
-	
+
 	/**
 	 * 根据ID查询
 	 * @param id ID
@@ -66,7 +71,7 @@ public class AdminController {
     public Result findSearch( @RequestBody Map searchMap){
         return new Result(true,StatusCode.OK,"查询成功",adminService.findSearch(searchMap));
     }
-	
+
 	/**
 	 * 增加
 	 * @param admin
@@ -76,7 +81,27 @@ public class AdminController {
 		adminService.add(admin);
 		return new Result(true,StatusCode.OK,"增加成功");
 	}
-	
+
+
+    /**
+     * 登录查询
+     *
+     * @param admin
+     */
+    @RequestMapping(value = "/login",method = RequestMethod.POST)
+    public Result findByName(@RequestBody Admin admin) {
+        Admin dbAdmin = adminService.findByName(admin.getLoginname(), admin.getPassword());
+        if (dbAdmin != null) {
+        	//登录成功,生成token'
+			String token = jwtUtil.createJWT(dbAdmin.getId(), dbAdmin.getLoginname(), "admin");
+			Map<String,Object> map = new HashMap<>();
+			map.put("token",token );
+			map.put("roles","admin" );
+            return new Result(true, StatusCode.OK, "登录成功", map);
+        }
+        return new Result(false, StatusCode.LOGINERROR, "登录失败");
+    }
+
 	/**
 	 * 修改
 	 * @param admin
@@ -84,10 +109,10 @@ public class AdminController {
 	@RequestMapping(value="/{id}",method= RequestMethod.PUT)
 	public Result update(@RequestBody Admin admin, @PathVariable String id ){
 		admin.setId(id);
-		adminService.update(admin);		
+		adminService.update(admin);
 		return new Result(true,StatusCode.OK,"修改成功");
 	}
-	
+
 	/**
 	 * 删除
 	 * @param id
@@ -97,5 +122,5 @@ public class AdminController {
 		adminService.deleteById(id);
 		return new Result(true,StatusCode.OK,"删除成功");
 	}
-	
+
 }

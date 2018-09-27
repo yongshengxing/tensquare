@@ -4,6 +4,7 @@ import com.tensquare.user.dao.UserDao;
 import com.tensquare.user.pojo.User;
 import entity.Result;
 import entity.StatusCode;
+import io.jsonwebtoken.Claims;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,13 +12,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import utils.IdWorker;
+import utils.JwtUtil;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -41,6 +45,15 @@ public class UserService {
 
 	@Autowired
 	private RabbitTemplate rabbitTemplate;
+
+	@Autowired
+	private BCryptPasswordEncoder encoder;
+
+	@Autowired
+	private JwtUtil jwtUtil;
+
+	@Autowired
+	private HttpServletRequest request;
 
 	/**
 	 * 查询全部列表
@@ -91,6 +104,7 @@ public class UserService {
 	public void add(User user) {
 		user.setId( idWorker.nextId()+"" );
 		user.setId( idWorker.nextId()+"" );
+		user.setPassword(encoder.encode(user.getPassword()));
 		user.setFollowcount(0);//关注数
 		user.setFanscount(0);//粉丝数
 		user.setOnline(0L);//在线时长
@@ -113,7 +127,44 @@ public class UserService {
 	 * @param id
 	 */
 	public void deleteById(String id) {
+		// 删除用户，必须拥有管理员权限，否则不能删除。
+		//前后端约定：前端请求微服务时需要添加头信息Authorization ,内容为Bearer+空格  +token
+		//获取请求头
+	/*	try {
+			String authorization = request.getHeader("Authorization");
+			if (authorization.isEmpty()) {
+				throw new RuntimeException("权限不足");
+			}
+			if (!authorization.startsWith("Bearer ")) {
+				throw new RuntimeException("权限不足");
+			}
+			String token = authorization.substring(new String("Bearer ").length());
+			if (token == null || "".equals(token)) {
+				throw new RuntimeException("权限不足");
+			}
+
+			Claims claims = jwtUtil.parseJWT(token);
+			String roles = (String) claims.get("roles");
+			String name = claims.getSubject();
+			if (roles == null || !roles.equals("admin")) {
+				throw new RuntimeException("权限不足");
+			}
+			//必须以admin管理员删除
+			if (name == null || !name.equals("admin") || "".equals(name)){
+				throw new RuntimeException("需要admin用户权限");
+			}
+			userDao.deleteById(id);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException(e.getMessage());
+		}*/
+		String token = (String) request.getAttribute("admin_claims");
+		if (token==null || "".equals(token)){
+			throw new RuntimeException("权限不足！");
+		}
 		userDao.deleteById(id);
+
+
 	}
 
 	/**
@@ -195,5 +246,20 @@ public class UserService {
 			return false;
 		}
 		return true;
+	}
+
+	/**
+	 * 用户登录查询
+	 * @param username
+	 * @param password
+	 * @return
+	 */
+	public User findByUserName(String username,String password){
+
+		User dbUser = userDao.findByNickname(username);
+		if (dbUser != null && encoder.matches(password,dbUser.getPassword() )){
+			return dbUser;
+		}
+		return null;
 	}
 }

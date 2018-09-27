@@ -5,11 +5,15 @@ import com.tensquare.user.service.UserService;
 import entity.PageResult;
 import entity.Result;
 import entity.StatusCode;
+import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
+import utils.JwtUtil;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -28,6 +32,11 @@ public class UserController {
     @Autowired
     private RedisTemplate redisTemplate;
 
+    @Autowired
+    private HttpServletRequest request;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     /**
      * 查询全部数据
@@ -106,6 +115,24 @@ public class UserController {
      */
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public Result delete(@PathVariable String id) {
+   /*     // 删除用户，必须拥有管理员权限，否则不能删除。
+        //前后端约定：前端请求微服务时需要添加头信息Authorization ,内容为Bearer+空格  +token
+        //获取请求头
+        String authorization = request.getHeader("Authorization");
+        if (authorization.isEmpty()){
+            return new Result(false,StatusCode.ACCESSERROR,"权限不足");
+        }
+
+        if (!authorization.startsWith("Bearer ")){
+            return new Result(false,StatusCode.ACCESSERROR,"权限不足");
+        }
+        String token = authorization.substring(new String("Bearer ").length());
+        Claims claims = jwtUtil.parseJWT(token);
+        String roles = (String) claims.get("roles");
+        if (!roles.equals("admin")){
+            return new Result(false,StatusCode.ACCESSERROR,"权限不足");
+        }*/
+
         userService.deleteById(id);
         return new Result(true, StatusCode.OK, "删除成功");
     }
@@ -158,6 +185,27 @@ public class UserController {
         //删除缓冲注册码信息
         redisTemplate.delete("randomCode_" +user.getMobile());
         return new Result(true, StatusCode.OK, "增加成功");
+    }
+
+
+    /**
+     * 登录查询
+     *
+     * @param user
+     */
+    @RequestMapping(value = "/login",method = RequestMethod.POST)
+    public Result findByName(@RequestBody User user) {
+        User dbUser = userService.findByUserName(user.getNickname(), user.getPassword());
+        if (dbUser != null) {
+            String token = jwtUtil.createJWT(dbUser.getId(), dbUser.getNickname(), "user");
+            Map<String,Object> map = new HashMap<>();
+            map.put("user_role","user" );
+            map.put("token", token);
+            map.put("name",user.getNickname());//昵称
+            map.put("avatar",user.getAvatar());//头像
+            return new Result(true, StatusCode.OK, "登录成功", map);
+        }
+        return new Result(false, StatusCode.LOGINERROR, "登录失败");
     }
 
 

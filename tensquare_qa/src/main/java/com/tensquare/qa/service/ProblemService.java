@@ -14,6 +14,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,10 @@ public class ProblemService {
 
     @Autowired
     private IdWorker idWorker;
+
+    @Autowired
+
+    private HttpServletRequest request;
 
     /**
      * 查询全部列表
@@ -84,6 +89,10 @@ public class ProblemService {
      * @param problem
      */
     public void add(Problem problem) {
+        String user_claims = (String) request.getAttribute("user_claims");
+        if (user_claims.isEmpty()){
+            throw new RuntimeException("权限不足");
+        }
         problem.setId(idWorker.nextId() + "");
         problemDao.save(problem);
     }

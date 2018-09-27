@@ -15,3 +15,7 @@ spring:
     host: 192.168.66.134
   redis:
     host: 192.168.66.134
+jwt:
+  config:
+    key: dlms
+    ttl: 6000000

@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.parameters.P;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import utils.IdWorker;
 
@@ -31,6 +33,9 @@ public class AdminService {
 	
 	@Autowired
 	private IdWorker idWorker;
+
+	@Autowired
+	private BCryptPasswordEncoder encoder;
 
 	/**
 	 * 查询全部列表
@@ -80,7 +85,16 @@ public class AdminService {
 	 */
 	public void add(Admin admin) {
 		admin.setId( idWorker.nextId()+"" );
+		admin.setPassword(encoder.encode(admin.getPassword()));
 		adminDao.save(admin);
+	}
+
+	public Admin findByName(String loginName,String password){
+		Admin dbAdmin = adminDao.findByLoginname(loginName);
+		if (dbAdmin != null && encoder.matches(password,dbAdmin.getPassword() )) {
+			return dbAdmin;
+		}
+		return null;
 	}
 
 	/**
