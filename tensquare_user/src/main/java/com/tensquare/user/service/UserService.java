@@ -2,9 +2,6 @@ package com.tensquare.user.service;
 
 import com.tensquare.user.dao.UserDao;
 import com.tensquare.user.pojo.User;
-import entity.Result;
-import entity.StatusCode;
-import io.jsonwebtoken.Claims;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +11,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import utils.IdWorker;
 import utils.JwtUtil;
 
@@ -32,6 +30,7 @@ import java.util.concurrent.TimeUnit;
  *
  */
 @Service
+@Transactional
 public class UserService {
 
 	@Autowired
@@ -262,4 +261,15 @@ public class UserService {
 		}
 		return null;
 	}
+
+
+	public void updateFansCount(int num,String id){
+		userDao.updateFansCount(num,id);
+	}
+
+	public void updateFollowCount(int num,String id){
+		userDao.updateFollowCount(num,id );
+	}
+
+
 }

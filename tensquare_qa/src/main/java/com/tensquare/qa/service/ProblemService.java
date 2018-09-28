@@ -2,6 +2,7 @@ package com.tensquare.qa.service;
 
 import com.tensquare.qa.dao.ProblemDao;
 import com.tensquare.qa.pojo.Problem;
+import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -89,8 +90,10 @@ public class ProblemService {
      * @param problem
      */
     public void add(Problem problem) {
-        String user_claims = (String) request.getAttribute("user_claims");
-        if (user_claims.isEmpty()){
+
+        Claims claims = (Claims) request.getAttribute("user_claims");
+
+        if (claims == null){
             throw new RuntimeException("权限不足");
         }
         problem.setId(idWorker.nextId() + "");

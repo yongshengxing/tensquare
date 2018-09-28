@@ -1,6 +1,7 @@
 package com.tensquare.qa.filter;
 
 import io.jsonwebtoken.Claims;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -29,7 +30,7 @@ public class JwtFilter implements HandlerInterceptor {
         // 删除用户，必须拥有管理员权限，否则不能删除。
         //前后端约定：前端请求微服务时需要添加头信息Authorization ,内容为Bearer+空格  +token
         String authorization = request.getHeader("Authorization");
-        if (!authorization.isEmpty() && authorization.startsWith("Bearer ")){
+        if (!StringUtils.isEmpty(authorization) && authorization.startsWith("Bearer ")){
             final String token = authorization.substring(new String("Bearer ").length());
             if (!token.isEmpty()){
                 try {

@@ -1,6 +1,7 @@
 package com.tensquare.user.filter;
 
 import io.jsonwebtoken.Claims;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -28,16 +29,17 @@ public class JwtFilter implements HandlerInterceptor {
         // 删除用户，必须拥有管理员权限，否则不能删除。
         //前后端约定：前端请求微服务时需要添加头信息Authorization ,内容为Bearer+空格  +token
         String authorization = request.getHeader("Authorization");
-        if (!authorization.isEmpty() && authorization.startsWith("Bearer ")){
+        if (authorization != null && "".equals(authorization) &&  authorization.startsWith("Bearer ")){
+//            StringUtils.isEmpty(authorization);
            final String token = authorization.substring(new String("Bearer ").length());
             if (!token.isEmpty()){
                 try {
                     Claims claims = jwtUtil.parseJWT(token);
                     if (!claims.isEmpty()){
                         if("admin".equals(claims.get("roles"))){//如果是管理员
-                            request.setAttribute("admin_claims", token);
+                            request.setAttribute("admin_claims", claims);
                         } if("user".equals(claims.get("roles"))){//如果是用户
-                            request.setAttribute("user_claims", token);
+                            request.setAttribute("user_claims", claims);
                         }
                     }
                 } catch (Exception e) {

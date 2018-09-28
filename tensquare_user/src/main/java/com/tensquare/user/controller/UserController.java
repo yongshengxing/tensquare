@@ -5,7 +5,6 @@ import com.tensquare.user.service.UserService;
 import entity.PageResult;
 import entity.Result;
 import entity.StatusCode;
-import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -169,7 +168,7 @@ public class UserController {
         return new Result(true,StatusCode.ERROR,"验证码不存在或已过期");*/
 
         try {
-            String randomCode = (String) redisTemplate.opsForValue().get("randomCode_" +user.getMobile());
+            String randomCode = (String) redisTemplate.opsForValue().get("randomCode_" + user.getMobile());
             if (randomCode.isEmpty()) {
                 return new Result(false, StatusCode.ERROR, "验证码不存或已过期");
             }
@@ -183,7 +182,7 @@ public class UserController {
 
         userService.add(user);
         //删除缓冲注册码信息
-        redisTemplate.delete("randomCode_" +user.getMobile());
+        redisTemplate.delete("randomCode_" + user.getMobile());
         return new Result(true, StatusCode.OK, "增加成功");
     }
 
@@ -193,19 +192,39 @@ public class UserController {
      *
      * @param user
      */
-    @RequestMapping(value = "/login",method = RequestMethod.POST)
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
     public Result findByName(@RequestBody User user) {
         User dbUser = userService.findByUserName(user.getNickname(), user.getPassword());
         if (dbUser != null) {
             String token = jwtUtil.createJWT(dbUser.getId(), dbUser.getNickname(), "user");
-            Map<String,Object> map = new HashMap<>();
-            map.put("user_role","user" );
+            Map<String, Object> map = new HashMap<>();
+            map.put("user_role", "user");
             map.put("token", token);
-            map.put("name",user.getNickname());//昵称
-            map.put("avatar",user.getAvatar());//头像
+            map.put("name", user.getNickname());//昵称
+            map.put("avatar", user.getAvatar());//头像
             return new Result(true, StatusCode.OK, "登录成功", map);
         }
         return new Result(false, StatusCode.LOGINERROR, "登录失败");
+    }
+
+    /**
+     * 新增关注
+     * @param num
+     * @param id
+     */
+    @RequestMapping(value = "/updateFansCount/{num}/{id}",method = RequestMethod.GET)
+    public void updateFansCount(@PathVariable int num,@PathVariable String id) {
+        userService.updateFansCount(num, id);
+    }
+
+    /**
+     * 新增粉丝
+     * @param num
+     * @param id
+     */
+    @RequestMapping(value = "/updateFollowCount/{num}/{id}",method = RequestMethod.GET)
+    public void updateFollowCount(@PathVariable int num,@PathVariable String id) {
+        userService.updateFollowCount(num, id);
     }
 
 

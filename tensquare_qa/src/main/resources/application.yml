@@ -15,3 +15,10 @@ jwt:
   config:
     key: dlms
     ttl: 6000000
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:6868/eureka
+  instance:
+    prefer-ip-address: true #配置之后以后在服务器部署的时候可以跨域访问,本地测试可以不加
+

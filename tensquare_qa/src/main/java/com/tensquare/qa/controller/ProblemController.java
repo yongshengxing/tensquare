@@ -2,6 +2,7 @@ package com.tensquare.qa.controller;
 import java.util.List;
 import java.util.Map;
 
+import com.tensquare.qa.cilent.LableCilent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -30,6 +31,9 @@ public class ProblemController {
 
 	@Autowired
 	private ProblemService problemService;
+
+	@Autowired
+	private LableCilent labelClient;
 	
 	
 	/**
@@ -167,6 +171,18 @@ public class ProblemController {
 		return new Result(true,StatusCode.OK,"查询成功",new PageResult<Problem>(problems.getTotalPages(),problems.getContent()));
 	}
 
+
+	@RequestMapping(value = "/label/{labelid}")
+	public Result findLabelById(@PathVariable String labelid){
+		Result result = labelClient.findOne(labelid);
+		return result;
+	}
+
+	@RequestMapping("/findAll")
+	public Result findAlls(){
+		Result result = labelClient.findAll();
+		return result;
+	}
 
 
 }
