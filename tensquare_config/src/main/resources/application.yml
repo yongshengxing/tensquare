@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: tensquare_config
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://gitee.com/denglimings/tq-config.git
+server:
+  port: 12000

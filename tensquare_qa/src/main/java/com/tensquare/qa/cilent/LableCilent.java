@@ -1,5 +1,6 @@
 package com.tensquare.qa.cilent;
 
+import com.tensquare.qa.cilent.impl.LableClientImpl;
 import entity.Result;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
  * @version 1.0
  * @create 2018-09-28 18:32
  **/
-@FeignClient("tensquare-base")
+@FeignClient(value = "tensquare-base",fallback = LableClientImpl.class)
 public interface LableCilent {
 
     @RequestMapping(value = "/label/{id}",method = RequestMethod.GET)

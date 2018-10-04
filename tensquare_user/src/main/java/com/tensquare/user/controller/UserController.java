@@ -44,6 +44,7 @@ public class UserController {
      */
     @RequestMapping(method = RequestMethod.GET)
     public Result findAll() {
+        System.out.println(request.getHeader("Authorization"));
         return new Result(true, StatusCode.OK, "查询成功", userService.findAll());
     }
 

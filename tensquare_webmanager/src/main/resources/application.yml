@@ -1,0 +1,19 @@
+server:
+  port: 9012
+spring:
+  application:
+    name: tensquare-webmanager #服务名 负责管理后台
+eureka:
+  client:
+    service-url:
+      defaultZone: http://127.0.0.1:6868/eureka/
+  instance:
+    prefer-ip-address: true #开启服务端跨域请求
+zuul:
+  routes:
+    tensquare-base: #基础
+      path: /base/** #配置请求URL的请求规则
+      serviceId: tensquare-base #指定Eureka注册中心中的服务id
+    tensquare-user: #用户
+      path: /user/** #配置请求URL的请求规则
+      serviceId: tensquare-user #指定Eureka注册中心中的服务id
