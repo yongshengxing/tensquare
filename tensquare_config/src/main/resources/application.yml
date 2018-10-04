@@ -6,5 +6,12 @@ spring:
       server:
         git:
           uri: https://gitee.com/denglimings/tq-config.git
+  rabbitmq:
+    host: 192.168.66.134
 server:
   port: 12000
+management: #暴露触发消息总线的地址
+  endpoints:
+    web:
+      exposure:
+        include: bus-refresh

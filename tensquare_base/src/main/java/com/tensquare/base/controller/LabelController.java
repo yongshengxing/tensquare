@@ -6,6 +6,8 @@ import entity.PageResult;
 import entity.Result;
 import entity.StatusCode;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,10 +22,14 @@ import java.util.List;
 @RestController
 @RequestMapping("/label")
 @CrossOrigin //表示允许跨域
+@RefreshScope
 public class LabelController {
 
     @Autowired
     private LabelService service;
+
+    @Value("${sms.ip}")
+    private String sms;
 
 
     @RequestMapping(method = RequestMethod.POST)
@@ -36,6 +42,7 @@ public class LabelController {
     @RequestMapping(method = RequestMethod.GET)
     public Result findAll(){
         int i = 1 / 1 ;
+        System.out.println(sms);
         System.out.println(service);
         List<Label> labelList = service.findAll();
         return new Result(true,StatusCode.OK,"查询成功",labelList);
